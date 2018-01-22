@@ -3,6 +3,9 @@ package classes;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
@@ -52,12 +56,10 @@ public class Worker extends JPanel implements ActionListener{
 	private static String resultString;
 	
 	public static void main(String[] args) {
-		resultWindow();
+		appWindow();
 		
 		resultFrame.setVisible(true);
 		resultFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-//		compareVersions();
 	}
 	
 	public static void compareVersions() {
@@ -83,7 +85,7 @@ public class Worker extends JPanel implements ActionListener{
         // do things
     }
 	
-	public synchronized static void resultWindow() {
+	public synchronized static void appWindow() {
 		resultFrame = new JFrame("DB Version Compare");
 		File resultPath = new File(System.getProperty("user.dir"));
 		fc = new JFileChooser(resultPath);
@@ -95,17 +97,17 @@ public class Worker extends JPanel implements ActionListener{
 		resultFrame.setBounds(0, 0, 1300, 650);
 
 		prodSourceVersions = new JTextArea();
-		prodSourceVersions.setText("production version list here");
+		prodSourceVersions.setText("");
 		prodSourceVersions.setEditable(true);
 		prodSourceVersions.setLineWrap(true);
 		
 		locSourceVersions = new JTextArea();
-		locSourceVersions.setText("local version list here");
+		locSourceVersions.setText("");
 		locSourceVersions.setEditable(true);
 		locSourceVersions.setLineWrap(true);
 		
 		resultVersions = new JTextArea();
-		resultVersions.setText("results will show here");
+		resultVersions.setText("");
 		resultVersions.setEditable(false);
 		resultVersions.setLineWrap(true);
 
@@ -144,24 +146,55 @@ public class Worker extends JPanel implements ActionListener{
 		generateControls.add(gbutton);
 		
 		JPanel textFields = new JPanel();
-		textFields.setLayout(new FlowLayout());
+		textFields.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
 		JScrollPane prodScrollPane = new JScrollPane(prodSourceVersions,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		JScrollPane locScrollPane = new JScrollPane(locSourceVersions,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		JScrollPane resultScrollPane = new JScrollPane(resultVersions,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		prodScrollPane.setPreferredSize(new Dimension(400,500));
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 0;
+		textFields.add(prodScrollPane, c);
+		
+		JScrollPane locScrollPane = new JScrollPane(locSourceVersions,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		locScrollPane.setPreferredSize(new Dimension(400,500));
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 0;
+		textFields.add(locScrollPane, c);
+		
+		JScrollPane resultScrollPane = new JScrollPane(resultVersions,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		resultScrollPane.setPreferredSize(new Dimension(400,500));
-		textFields.add(prodScrollPane);
-		textFields.add(locScrollPane);
-		textFields.add(resultScrollPane);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 2;
+		c.gridy = 0;
+		textFields.add(resultScrollPane, c);
+		
+		JLabel prodLabel = new JLabel("Production Version List (paste here)   ");
+		prodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		c.gridx = 0;
+		c.gridy = 1;
+		textFields.add(prodLabel,c);
+		
+		JLabel locLabel = new JLabel("Local Version List (paste here)   ");
+		locLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		c.gridx = 1;
+		c.gridy = 1;
+		textFields.add(locLabel,c);
+		
+		JLabel resultLabel = new JLabel("Results (missing versions shown here)   ");
+		resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		c.gridx = 2;
+		c.gridy = 1;
+		textFields.add(resultLabel,c);
 		
 		JPanel saveControls = new JPanel();
 		saveControls.setLayout(new FlowLayout());
 		saveControls.add(saveFile);
 
+		resultFrame.getContentPane().add(generateControls, BorderLayout.NORTH);
 		resultFrame.getContentPane().add(textFields, BorderLayout.CENTER);
 		resultFrame.getContentPane().add(saveControls, BorderLayout.SOUTH);
-		resultFrame.getContentPane().add(generateControls, BorderLayout.NORTH);
 	}
 
 }
